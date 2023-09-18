@@ -613,8 +613,8 @@ class MyPyClass:
 		local_db_before_mutation = Dict(self.db)
 		need_write_local_data = self.merge_three_dicts(self.db, file_data, self.buffer.old_db)
 		self.buffer.old_db = Dict(self.db)
-		self.add_log(f'DEBUG_MISSING_CONFIG (save_db): local_db_before_mutation: {json.dumps(local_db_before_mutation)} | self.db = {json.dumps(self.db)} | file_data = {json.dumps(file_data)} | self.buffer.old_db = {json.dumps(self.buffer.old_db)} | need_write_local_data: {need_write_local_data}')
 		if need_write_local_data is True:
+			self.add_log(f'DEBUG_MISSING_CONFIG (save_db): local_db_before_mutation: {json.dumps(local_db_before_mutation)} | self.db = {json.dumps(self.db)} | file_data = {json.dumps(file_data)} | self.buffer.old_db = {json.dumps(self.buffer.old_db)}')
 			self.write_db(self.db)
 	#end define
 	
