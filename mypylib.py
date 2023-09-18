@@ -614,7 +614,8 @@ class MyPyClass:
 		need_write_local_data = self.merge_three_dicts(self.db, file_data, self.buffer.old_db)
 		self.buffer.old_db = Dict(self.db)
 		if need_write_local_data is True:
-			self.add_log(f'DEBUG_MISSING_CONFIG (save_db): local_db_before_mutation: {json.dumps(local_db_before_mutation)} | self.db = {json.dumps(self.db)} | file_data = {json.dumps(file_data)} | self.buffer.old_db = {json.dumps(self.buffer.old_db)}')
+			dict_with_skipped_elections = lambda d: dict((key,d[key]) for key in d if key!='saveElections')
+			self.add_log(f'DEBUG_MISSING_CONFIG (save_db): local_db_before_mutation: {dict_with_skipped_elections(json.dumps(local_db_before_mutation))} | self.db = {dict_with_skipped_elections(json.dumps(self.db))} | file_data = {dict_with_skipped_elections(json.dumps(file_data))} | self.buffer.old_db = {dict_with_skipped_elections(json.dumps(self.buffer.old_db))}')
 			self.write_db(self.db)
 	#end define
 	
