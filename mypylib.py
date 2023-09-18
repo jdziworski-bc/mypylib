@@ -6,6 +6,7 @@ import re
 import sys
 import time
 import json
+import traceback
 import zlib
 import signal
 import base64
@@ -494,9 +495,14 @@ class MyPyClass:
 	def write_db(self, data):
 		db_path = self.buffer.db_path
 		text = json.dumps(data, indent=4)
+		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): {traceback.format_exc()}')
+		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Locking {db_path}.')
 		self.lock_file(db_path)
+		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Writing to {db_path} content: {text}')
 		self.write_file(db_path, text)
+		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Unlocking {db_path}.')
 		self.unlock_file(db_path)
+		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Unlocked {db_path}.')
 	#end define
 
 	def lock_file(self, path):
@@ -604,8 +610,10 @@ class MyPyClass:
 
 	def save_db(self):
 		file_data = self.read_db(self.buffer.db_path)
+		local_db_before_mutation = self.db
 		need_write_local_data = self.merge_three_dicts(self.db, file_data, self.buffer.old_db)
 		self.buffer.old_db = Dict(self.db)
+		self.add_log(f'DEBUG_MISSING_CONFIG (save_db). local_db_before_mutation: {json.dumps(local_db_before_mutation)} | self.db = {json.dumps(self.db)} | file_data = {json.dumps(file_data)} | self.buffer.old_db = {json.dumps(self.buffer.old_db)} | need_write_local_data: {need_write_local_data}')
 		if need_write_local_data is True:
 			self.write_db(self.db)
 	#end define
@@ -616,9 +624,11 @@ class MyPyClass:
 	#end define
 
 	def load_db(self, db_path=False):
+		self.add_log(f'DEBUG_MISSING_CONFIG (load_db). db_path: {db_path}')
 		result = False
 		if not db_path:
 			db_path = self.buffer.db_path
+			self.add_log(f'DEBUG_MISSING_CONFIG (load_db). setting db_path to: {db_path}')
 		if not os.path.isfile(db_path):
 			self.write_db(self.db)
 		try:
