@@ -498,7 +498,7 @@ class MyPyClass:
 		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): {traceback.format_exc()}')
 		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Locking {db_path}.')
 		self.lock_file(db_path)
-		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Writing to {db_path} content: {text}')
+		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Writing to {db_path} content: {json.dumps(dict_with_skipped_elections(data))}')
 		self.write_file(db_path, text)
 		self.add_log(f'DEBUG_MISSING_CONFIG (write_db): Unlocking {db_path}.')
 		self.unlock_file(db_path)
@@ -608,13 +608,14 @@ class MyPyClass:
 			raise Exception(f"mtdp_fcfc error: {key} -> {tmp.local_item_type}, {tmp.file_item_type}, {tmp.old_file_item_type}")
 	#end define
 
+
+
 	def save_db(self):
 		file_data = self.read_db(self.buffer.db_path)
 		local_db_before_mutation = Dict(self.db)
 		need_write_local_data = self.merge_three_dicts(self.db, file_data, self.buffer.old_db)
 		self.buffer.old_db = Dict(self.db)
 		if need_write_local_data is True:
-			dict_with_skipped_elections = lambda d: dict((key,d[key]) for key in d if key in ['usePool', 'config'])
 			self.add_log(f'DEBUG_MISSING_CONFIG (save_db): local_db_before_mutation: {json.dumps(dict_with_skipped_elections(local_db_before_mutation))} | self.db = {json.dumps(dict_with_skipped_elections(self.db))} | file_data = {json.dumps(dict_with_skipped_elections(file_data))} | self.buffer.old_db = {json.dumps(dict_with_skipped_elections(self.buffer.old_db))}')
 			self.write_db(self.db)
 	#end define
@@ -789,6 +790,9 @@ def dir(input_dir):
 def b2mb(item):
 	return round(int(item) / 1000 / 1000, 2)
 #end define
+
+def dict_with_skipped_elections(d):
+	return dict((key,d[key]) for key in d if key!='saveElections')
 
 def search_file_in_dir(path, file_name):
 	result = None
